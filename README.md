@@ -56,8 +56,26 @@ chmod +x mvnw
 Backend sẽ khởi chạy tại cổng: `http://localhost:8080`
 
 ---
+ 
+### 3. Khởi chạy AI Server (Python Flask)
+Di chuyển vào thư mục `ml` và chạy server gợi ý AI (yêu cầu Python 3.9+):
+1. Cài đặt các thư viện học máy và Flask cần thiết:
+   ```bash
+   pip install flask flask-cors pandas numpy scikit-learn matplotlib
+   ```
+2. (Tùy chọn) Nếu muốn huấn luyện lại mô hình phân loại ý định và trích xuất vector TF-IDF:
+   ```bash
+   python train.py
+   ```
+3. Khởi chạy server API Gợi ý và Chatbot:
+   ```bash
+   python app.py
+   ```
+AI Server sẽ chạy tại địa chỉ: `http://localhost:5000`
 
-### 3. Khởi chạy Frontend (ReactJS + Vite)
+---
+
+### 4. Khởi chạy Frontend (ReactJS + Vite)
 Di chuyển vào thư mục `frontend`, cài đặt thư viện và khởi chạy:
 ```bash
 cd frontend
