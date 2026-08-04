@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.tltn.tour.service.TourService;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 
@@ -16,7 +18,7 @@ public class TourRecommendationApplication {
 	}
 
 	@Bean
-	public CommandLineRunner testConnection(DataSource dataSource) {
+	public CommandLineRunner testConnection(DataSource dataSource, TourService tourService, com.tltn.tour.service.UserService userService) {
 		return args -> {
 			try (Connection connection = dataSource.getConnection()) {
 				System.out.println("==============================================");
@@ -24,6 +26,10 @@ public class TourRecommendationApplication {
 				System.out.println("Database: " + connection.getMetaData().getDatabaseProductName());
 				System.out.println("URL: " + connection.getMetaData().getURL());
 				System.out.println("==============================================");
+				
+				// Seed database after connection is established
+				tourService.seedDatabase();
+				userService.seedAdmin();
 			} catch (Exception e) {
 				System.out.println("==============================================");
 				System.out.println("❌ KẾT NỐI DATABASE THẤT BẠI!");
