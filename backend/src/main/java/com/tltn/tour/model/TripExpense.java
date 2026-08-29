@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 
 @Entity
@@ -19,6 +20,11 @@ public class TripExpense {
 
     @Column(name = "trip_plan_id", nullable = false)
     private Long tripPlanId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_plan_id", insertable = false, updatable = false)
+    @JsonIgnore
+    private TripPlan tripPlan;
 
     private String title;
 

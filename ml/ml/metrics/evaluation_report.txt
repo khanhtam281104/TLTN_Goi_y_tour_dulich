@@ -1,0 +1,23 @@
+Accuracy: 86.33%
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Hà Giang       0.92      1.00      0.96        12
+      Hà Nội       0.80      0.80      0.80        10
+     Hạ Long       0.92      1.00      0.96        12
+        Khác       0.63      1.00      0.77        12
+    Miền Tây       0.73      0.80      0.76        10
+   Nha Trang       1.00      1.00      1.00        13
+   Ninh Bình       0.00      0.00      0.00         2
+  Nước ngoài       1.00      0.83      0.91        12
+    Phú Quốc       0.94      0.88      0.91        17
+     Phú Yên       0.00      0.00      0.00         2
+    Quy Nhơn       0.00      0.00      0.00         2
+        Sapa       0.94      1.00      0.97        17
+      Đà Lạt       0.81      0.87      0.84        15
+     Đà Nẵng       0.00      0.00      0.00         3
+
+    accuracy                           0.86       139
+   macro avg       0.62      0.66      0.63       139
+weighted avg       0.82      0.86      0.84       139

@@ -96,11 +96,11 @@ export const FeedbackPage: React.FC<FeedbackPageProps> = ({ user }) => {
       <nav className="breadcrumb-container" aria-label="breadcrumb">
         <span className="breadcrumb-link" onClick={() => navigate('/')}>Trang chủ</span>
         <span className="breadcrumb-separator">›</span>
-        <span className="breadcrumb-active">Phiếu Góp Ý & Ý Kiến Đóng Góp</span>
+        <span className="breadcrumb-active">Đóng góp ý kiến</span>
       </nav>
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <h2 className="dashboard-title" style={{ color: '#e11d74' }}>Phiếu Góp Ý & Ý Kiến Đóng Góp</h2>
+        <h2 className="dashboard-title" style={{ color: '#e11d74' }}>Đóng góp ý kiến</h2>
       </div>
 
       <div className="dashboard-card" style={{ padding: '2.5rem', borderRadius: '16px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}>
@@ -167,6 +167,7 @@ export const FeedbackPage: React.FC<FeedbackPageProps> = ({ user }) => {
               <option value="Báo lỗi kỹ thuật hệ thống">Báo lỗi kỹ thuật hệ thống</option>
               <option value="Đóng góp về nội dung tour">Đóng góp về nội dung và chất lượng tour</option>
               <option value="Yêu cầu hỗ trợ đặc biệt">Yêu cầu hỗ trợ đặc biệt</option>
+              <option value="Yêu cầu tư vấn đặt Tour">Yêu cầu tư vấn đặt Tour (Tour Liên hệ)</option>
               <option value="Khác">Chủ đề khác</option>
             </select>
           </div>
@@ -199,7 +200,7 @@ export const FeedbackPage: React.FC<FeedbackPageProps> = ({ user }) => {
             disabled={loading}
             style={{ width: '100%', padding: '0.85rem', fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, var(--primary), var(--accent))', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', marginTop: '0.5rem' }}
           >
-            {loading ? 'Đang gửi ý kiến đóng góp...' : 'Gửi Phiếu Góp Ý'}
+            {loading ? 'Đang gửi ý kiến đóng góp...' : 'Gửi đóng góp ý kiến'}
           </button>
         </form>
       </div>

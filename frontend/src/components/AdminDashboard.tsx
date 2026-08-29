@@ -904,7 +904,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   type="text" 
                   value={tourForm.tourUrl}
                   onChange={e => setTourForm({ ...tourForm, tourUrl: e.target.value })}
-                  placeholder="https://dulichviet.com.vn/tour-xyz"
+                  placeholder="https://bintravel.com.vn/tour-xyz"
                 />
               </div>
 

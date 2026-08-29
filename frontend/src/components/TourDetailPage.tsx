@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckoutModal } from './CheckoutModal';
 
@@ -109,11 +110,13 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
 
   const isContactOnly = 
-    !departureDate || 
-    departureDate.toLowerCase().includes('liên hệ') || 
-    departureDate.toLowerCase().includes('lien he') ||
-    departureDate.includes(',') ||
-    (!/\d/.test(departureDate));
+    (localTour?.price === 0) ||
+    (departureDate !== '' && (
+      departureDate.toLowerCase().includes('liên hệ') || 
+      departureDate.toLowerCase().includes('lien he') ||
+      departureDate.includes(',') ||
+      (!/\d/.test(departureDate))
+    ));
 
   // Scroll to top on load/change
   useEffect(() => {
@@ -540,14 +543,16 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
             <div className="booking-price-preview" style={{ margin: '1rem 0', padding: '0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: '4px', border: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                 <span>Giá tiền ước tính:</span>
-                <span>{selectedPrice ? selectedPrice : formatPrice(localTour.price)} &times; {numberOfGuests}</span>
+                <span>{localTour.price === 0 ? 'Liên hệ' : (selectedPrice ? selectedPrice : formatPrice(localTour.price)) + ` \u00d7 ${numberOfGuests}`}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1rem', marginTop: '0.25rem', color: '#10b981' }}>
                 <span>Tổng chi phí đặt tour:</span>
                 <span>
-                  {selectedPrice
-                    ? (Number(selectedPrice.replace(/[^0-9]/g, '')) * numberOfGuests).toLocaleString('vi-VN') + ' đ'
-                    : (localTour.price * numberOfGuests).toLocaleString('vi-VN') + ' đ'
+                  {localTour.price === 0
+                    ? 'Liên hệ'
+                    : selectedPrice
+                      ? (Number(selectedPrice.replace(/[^0-9]/g, '')) * numberOfGuests).toLocaleString('vi-VN') + ' đ'
+                      : (localTour.price * numberOfGuests).toLocaleString('vi-VN') + ' đ'
                   }
                 </span>
               </div>
@@ -580,7 +585,7 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
       />
 
       {/* Contact Advice Modal */}
-      {showContactModal && (
+      {showContactModal && createPortal(
         <div className="auth-overlay" onClick={() => setShowContactModal(false)}>
           <div className="auth-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '450px', padding: '2rem', textAlign: 'center' }}>
             <button className="auth-close" onClick={() => setShowContactModal(false)}>&times;</button>
@@ -624,11 +629,12 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Add To Cart Success Dialog */}
-      {showSuccessDialog && (
+      {showSuccessDialog && createPortal(
         <div className="cart-success-dialog-overlay" onClick={() => setShowSuccessDialog(false)}>
           <div className="cart-success-dialog" onClick={e => e.stopPropagation()}>
             <span className="cart-success-icon">🎉</span>
@@ -659,7 +665,8 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

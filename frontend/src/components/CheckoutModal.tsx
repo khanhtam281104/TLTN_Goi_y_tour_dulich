@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -32,10 +34,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   }, 0);
 
   const bookingIds = bookingsList.map(b => b.id).join('-');
-  const referenceText = `Dulichviet DH${bookingIds}`.substring(0, 50);
+  const referenceText = `Bintravel DH${bookingIds}`.substring(0, 50);
 
   // Generate VietQR URL dynamically
-  const vietQrUrl = `https://api.vietqr.io/image/970422-1900117788-W63lK1t.jpg?accountName=CONG%20TY%20DU%20LICH%20VIET&amount=${totalCost}&addInfo=${encodeURIComponent(referenceText)}`;
+  const vietQrUrl = `https://api.vietqr.io/image/970422-1900117788-W63lK1t.jpg?accountName=CONG%20TY%20BINTRAVEL&amount=${totalCost}&addInfo=${encodeURIComponent(referenceText)}`;
 
   const handleConfirmPaid = () => {
     setLoading(true);
@@ -49,7 +51,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }, 1500);
   };
 
-  return (
+  return createPortal(
     <div className="checkout-overlay">
       <div className="checkout-card animate-scale-up">
         {step === 2 ? (
@@ -148,7 +150,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       </div>
                       <div className="bank-info-row">
                         <span>Chủ tài khoản:</span>
-                        <strong>CONG TY DU LICH VIET</strong>
+                        <strong>CONG TY BINTRAVEL</strong>
                       </div>
                       <div className="bank-info-row">
                         <span>Số tiền:</span>
@@ -156,7 +158,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       </div>
                       <div className="bank-info-row">
                         <span>Nội dung CK:</span>
-                        <strong style={{ color: 'var(--primary)' }}>Dulichviet {bookingIds}</strong>
+                        <strong style={{ color: 'var(--primary)' }}>Bintravel {bookingIds}</strong>
                       </div>
                     </div>
 
@@ -184,7 +186,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         </div>
                         <div className="bank-info-row">
                           <span>Nội dung chuyển:</span>
-                          <strong>Dulichviet {bookingIds}</strong>
+                          <strong>Bintravel {bookingIds}</strong>
                         </div>
                       </div>
                     </div>
@@ -261,6 +263,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

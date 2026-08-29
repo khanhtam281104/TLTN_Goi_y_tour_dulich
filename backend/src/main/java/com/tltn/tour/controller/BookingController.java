@@ -14,11 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.tltn.tour.config.VNPayConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -39,6 +41,9 @@ public class BookingController {
 
     @Autowired
     private SystemLogRepository systemLogRepository;
+
+    @Autowired
+    private VNPayConfig vnpayConfig;
 
     private void logActivity(String action, String details, String username) {
         try {
@@ -109,6 +114,85 @@ public class BookingController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/vnpay-url")
+    public ResponseEntity<?> getVNPayUrl(
+            @RequestParam("bookingIds") String bookingIdsStr,
+            HttpServletRequest request) {
+        try {
+            if (bookingIdsStr == null || bookingIdsStr.trim().isEmpty()) {
+                throw new IllegalArgumentException("Mã đơn đặt tour không hợp lệ");
+            }
+
+            String[] idArr = bookingIdsStr.split("-");
+            long totalAmount = 0;
+
+            for (String idStr : idArr) {
+                Long bookingId = Long.parseLong(idStr.trim());
+                Optional<TourBooking> bookingOpt = tourBookingRepository.findById(bookingId);
+                if (bookingOpt.isEmpty()) {
+                    throw new IllegalArgumentException("Không tìm thấy đơn đặt tour mã #" + bookingId);
+                }
+                TourBooking booking = bookingOpt.get();
+                Tour tour = tourService.getTourById(booking.getTourId());
+                if (tour == null) {
+                    throw new IllegalArgumentException("Tour của đơn hàng #" + bookingId + " không tồn tại");
+                }
+                totalAmount += tour.getPrice() * booking.getNumberOfGuests();
+            }
+
+            if (totalAmount <= 0) {
+                throw new IllegalArgumentException("Số tiền thanh toán phải lớn hơn 0 đ");
+            }
+
+            Map<String, String> vnp_Params = new HashMap<>();
+            vnp_Params.put("vnp_Version", "2.1.0");
+            vnp_Params.put("vnp_Command", "pay");
+            vnp_Params.put("vnp_TmnCode", vnpayConfig.getTmnCode());
+            vnp_Params.put("vnp_Amount", String.valueOf(totalAmount * 100)); // VNPay uses cents (multiplied by 100)
+            vnp_Params.put("vnp_CurrCode", "VND");
+            vnp_Params.put("vnp_TxnRef", bookingIdsStr);
+            vnp_Params.put("vnp_OrderInfo", "Thanh toan don dat tour " + bookingIdsStr);
+            vnp_Params.put("vnp_OrderType", "other");
+            vnp_Params.put("vnp_Locale", "vn");
+            vnp_Params.put("vnp_ReturnUrl", vnpayConfig.getReturnUrl());
+            vnp_Params.put("vnp_IpAddr", VNPayConfig.getIpAddress(request));
+
+            Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+            String vnp_CreateDate = formatter.format(cld.getTime());
+            vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+            List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+            Collections.sort(fieldNames);
+            StringBuilder hashData = new StringBuilder();
+            StringBuilder query = new StringBuilder();
+            for (String fieldName : fieldNames) {
+                String fieldValue = vnp_Params.get(fieldName);
+                if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                    String encodedName = URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString());
+                    String encodedValue = URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString());
+
+                    if (hashData.length() > 0) {
+                        hashData.append('&');
+                    }
+                    hashData.append(fieldName).append('=').append(encodedValue);
+
+                    if (query.length() > 0) {
+                        query.append('&');
+                    }
+                    query.append(encodedName).append('=').append(encodedValue);
+                }
+            }
+            String queryUrl = query.toString();
+            String vnp_SecureHash = VNPayConfig.hmacSHA512(vnpayConfig.getHashSecret(), hashData.toString());
+            String paymentUrl = vnpayConfig.getVnpUrl() + "?" + queryUrl + "&vnp_SecureHash=" + vnp_SecureHash;
+
+            return ResponseEntity.ok(Map.of("paymentUrl", paymentUrl));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 }
