@@ -84,36 +84,8 @@ def load_models_and_data():
 
     # Load tours CSV
     df_tours = pd.read_csv(csv_path, encoding="utf-8")
-    
-    # Map CSV tours to their actual database IDs by matching tour_url
-    try:
-        import mysql.connector
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="113004",
-            database="tour_db"
-        )
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, tour_url FROM tours")
-        db_mappings = {url.strip(): db_id for db_id, url in cursor.fetchall() if url}
-        conn.close()
-        
-        mapped_ids = []
-        unmapped_count = 0
-        for idx, row in df_tours.iterrows():
-            url = str(row.get("tour_url", "")).strip()
-            if url in db_mappings:
-                mapped_ids.append(db_mappings[url])
-            else:
-                mapped_ids.append(1000000 + idx)
-                unmapped_count += 1
-                
-        df_tours["id"] = mapped_ids
-        print(f"Mapped {len(df_tours) - unmapped_count} tour IDs from MySQL database! ({unmapped_count} fallbacks)")
-    except Exception as e:
-        print(f"Warning: Could not connect to MySQL to load real IDs ({e}). Using sequential indices.")
-        df_tours["id"] = df_tours.index + 1
+    # Generate sequential IDs starting from 1 to match DB seeding order
+    df_tours["id"] = df_tours.index + 1
     
     # Fill NaN values in columns
     df_tours["title"] = df_tours["title"].fillna("")
@@ -375,7 +347,7 @@ def chat():
             filter_notices.append(f"thời lượng tối đa: {parsed_duration} ngày")
             
         filter_desc = " + ".join(filter_notices)
-        filter_suffix = ""
+        filter_suffix = f" (kèm bộ lọc {filter_desc})" if filter_desc else ""
 
         if pred_label == "Khác":
             if budget_per_person:

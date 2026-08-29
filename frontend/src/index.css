@@ -10,7 +10,6 @@
   
   --primary: #0284c7; /* Vibrant Sky Blue for Travel vibe */
   --primary-hover: #0369a1;
-  --primary-magenta: #e11d74;
   --accent: #ff4785; /* Bright Pink/Rose for Catchy CTAs */
   --accent-light: rgba(255, 71, 133, 0.08);
   
@@ -3405,36 +3404,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-}
-
-.auth-form-main .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.auth-form-main .form-group label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.auth-form-main .form-group input {
-  width: 100%;
-  background-color: var(--bg-tertiary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem 1rem;
-  color: var(--text-main);
-  font-size: 0.95rem;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.auth-form-main .form-group input:focus {
-  border-color: var(--primary);
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .auth-alert {

@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="top-bar-right">
           <span className="top-bar-link" onClick={() => navigate('/gop-y')}>
-            📝 Đóng góp ý kiến
+            📝 Phiếu góp ý
           </span>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -98,14 +98,11 @@ export const Header: React.FC<HeaderProps> = ({
       <header className="header-nav-bar">
         <div onClick={handleLogoClick} className="nav-bar-logo-link" style={{ cursor: 'pointer' }}>
           <div className="nav-logo-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '24px', height: '24px' }}>
-              <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="rgba(255, 255, 255, 0.2)"/>
-            </svg>
+            <span>✈️</span>
           </div>
           <div className="nav-logo-text-wrapper">
-            <span className="nav-logo-title">Bintravel</span>
-            <span className="nav-logo-subtitle">bin travel media</span>
+            <span className="nav-logo-title">dulichviet</span>
+            <span className="nav-logo-subtitle">viet media travel</span>
           </div>
         </div>
 

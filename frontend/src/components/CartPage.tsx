@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CartItem } from '../App';
+import { CheckoutModal } from './CheckoutModal';
 
 interface CartPageProps {
   cart: CartItem[];
@@ -15,6 +16,7 @@ export const CartPage: React.FC<CartPageProps> = ({
   cart,
   updateCartQty,
   removeFromCart,
+  clearCart,
   token,
   currentUser,
 }) => {
@@ -24,7 +26,10 @@ export const CartPage: React.FC<CartPageProps> = ({
   const [phone, setPhone] = useState('');
   const [generalNotes, setGeneralNotes] = useState('');
   
-
+  // Checkout modal states
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [createdBookings, setCreatedBookings] = useState<any[]>([]);
+  const [createdTours, setCreatedTours] = useState<any[]>([]);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -89,7 +94,9 @@ export const CartPage: React.FC<CartPageProps> = ({
       });
 
       const results = await Promise.all(promises);
-      navigate('/checkout', { state: { booking: results, tour: cart.map(i => i.tour) } });
+      setCreatedBookings(results);
+      setCreatedTours(cart.map(i => i.tour));
+      setShowCheckout(true);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Có lỗi xảy ra trong quá trình đặt tour. Vui lòng kiểm tra lại kết nối mạng.');
@@ -98,6 +105,15 @@ export const CartPage: React.FC<CartPageProps> = ({
     }
   };
 
+  const handleCheckoutSuccess = () => {
+    clearCart();
+  };
+
+  const handleCloseCheckout = () => {
+    setShowCheckout(false);
+    clearCart();
+    navigate('/profile?tab=bookings');
+  };
 
   return (
     <div className="cart-page-container page-fade">
@@ -307,7 +323,14 @@ export const CartPage: React.FC<CartPageProps> = ({
         </div>
       )}
 
-
+      {/* Checkout QR Code Cổng Thanh Toán */}
+      <CheckoutModal
+        isOpen={showCheckout}
+        booking={createdBookings}
+        tour={createdTours}
+        onClose={handleCloseCheckout}
+        onConfirmSuccess={handleCheckoutSuccess}
+      />
     </div>
   );
 };

@@ -250,146 +250,46 @@ def crawl_page(url, category):
             return []
         
         soup = BeautifulSoup(response.text, 'html.parser')
-        tours = []
+        scripts = soup.find_all('script', type='application/ld+json')
         
-        # Method 1: Parse using gt-card HTML structure (new layout)
-        cards = soup.find_all(class_='gt-card')
-        for card in cards:
+        tours = []
+        for script in scripts:
+            if not script.string:
+                continue
             try:
-                # 1. Title & URL
-                title = ""
-                tour_url = ""
-                title_el = card.find(class_='gt-card-title')
-                if title_el:
-                    a_el = title_el.find('a')
-                    if a_el:
-                        title = a_el.text.strip()
-                        tour_url = a_el.get('href', '').strip()
-                
-                if not title or not tour_url:
-                    continue
-                
-                # 2. Image URL
-                image_url = ""
-                img_container = card.find(class_='gt-card-img')
-                if img_container:
-                    if 'data-bg' in img_container.attrs:
-                        image_url = img_container['data-bg']
-                    elif 'style' in img_container.attrs:
-                        style = img_container['style']
-                        match = re.search(r"url\(['\"]?(.*?)['\"]?\)", style)
-                        if match:
-                            image_url = match.group(1)
-                    
-                    if not image_url:
-                        img_tag = img_container.find('img')
-                        if img_tag:
-                            image_url = img_tag.get('src') or img_tag.get('data-src') or img_tag.get('lazy-src')
-                
-                # 3. Price
-                price_val = 0
-                price_block = card.find(class_='gt-price-block')
-                if price_block:
-                    val_el = price_block.find(class_='val')
-                    if val_el:
-                        price_text = val_el.text.strip()
-                        digits = re.sub(r'\D', '', price_text)
-                        if digits:
-                            price_val = int(digits)
-                            
-                # 4. Duration
-                duration = "N/A"
-                duration_el = card.find(class_='gt-m-dur-short')
-                if duration_el:
-                    duration = duration_el.text.strip()
-                else:
-                    duration = extract_duration(title)
-                
-                location = extract_location(title)
-                
-                # Normalize relative URLs to absolute
-                if tour_url:
-                    tour_url = tour_url.strip()
-                    if tour_url.startswith('//'):
-                        tour_url = 'https:' + tour_url
-                    elif tour_url.startswith('/') and not tour_url.startswith('//'):
-                        tour_url = 'https://dulichviet.com.vn' + tour_url
-                
-                if image_url:
-                    image_url = image_url.strip()
-                    if image_url.startswith('//'):
-                        image_url = 'https:' + image_url
-                    elif image_url.startswith('/') and not image_url.startswith('//'):
-                        image_url = 'https://dulichviet.com.vn' + image_url
-                
-                tours.append({
-                    'title': title,
-                    'price': price_val,
-                    'duration': duration,
-                    'location': location,
-                    'category': category,
-                    'image_url': image_url,
-                    'tour_url': tour_url
-                })
+                data = json.loads(script.string)
+                if isinstance(data, dict):
+                    # Handle ItemList which contains the tours
+                    if data.get('@type') == 'ItemList' or 'itemListElement' in data:
+                        elements = data.get('itemListElement', [])
+                        for elem in elements:
+                            item = elem.get('item', {})
+                            if isinstance(item, dict) and item.get('@type') in ['Product', 'Tour', 'Place', 'Trip']:
+                                name = item.get('name', '').strip()
+                                tour_url = item.get('url', '').strip()
+                                image = item.get('image', '').strip()
+                                price = None
+                                
+                                offers = item.get('offers', {})
+                                if isinstance(offers, dict):
+                                    price = offers.get('price')
+                                
+                                duration = extract_duration(name)
+                                location = extract_location(name)
+                                
+                                tours.append({
+                                    'title': name,
+                                    'price': int(price) if price else 0,
+                                    'duration': duration,
+                                    'location': location,
+                                    'category': category,
+                                    'image_url': image,
+                                    'tour_url': tour_url
+                                })
             except Exception as e:
-                print(f"\n[Warning] Error parsing gt-card element: {e}")
-                
-        # Method 2: Parse using JSON-LD (as fallback)
-        if not tours:
-            scripts = soup.find_all('script', type='application/ld+json')
-            for script in scripts:
-                if not script.string:
-                    continue
-                try:
-                    data = json.loads(script.string)
-                    if isinstance(data, dict):
-                        if data.get('@type') == 'ItemList' or 'itemListElement' in data:
-                            elements = data.get('itemListElement', [])
-                            for elem in elements:
-                                item = elem.get('item', {})
-                                if isinstance(item, dict) and item.get('@type') in ['Product', 'Tour', 'Place', 'Trip']:
-                                    name = item.get('name', '').strip()
-                                    tour_url = item.get('url', '').strip()
-                                    image = item.get('image', '').strip()
-                                    price = None
-                                    
-                                    offers = item.get('offers', {})
-                                    if isinstance(offers, dict):
-                                        price = offers.get('price')
-                                    
-                                    duration = extract_duration(name)
-                                    location = extract_location(name)
-                                    
-                                    # Normalize relative URLs to absolute
-                                    if tour_url:
-                                        tour_url = tour_url.strip()
-                                        if tour_url.startswith('//'):
-                                            tour_url = 'https:' + tour_url
-                                        elif tour_url.startswith('/') and not tour_url.startswith('//'):
-                                            tour_url = 'https://dulichviet.com.vn' + tour_url
-                                            
-                                    if image:
-                                        image = image.strip()
-                                        if image.startswith('//'):
-                                            image = 'https:' + image
-                                        elif image.startswith('/') and not image.startswith('//'):
-                                            image = 'https://dulichviet.com.vn' + image
-                                    
-                                    tours.append({
-                                        'title': name,
-                                        'price': int(price) if price else 0,
-                                        'duration': duration,
-                                        'location': location,
-                                        'category': category,
-                                        'image_url': image,
-                                        'tour_url': tour_url
-                                    })
-                except Exception:
-                    pass
-                    
+                pass
         return tours
     except Exception as e:
-        print(f"\n[Error] Failed to crawl page {url}: {e}")
         return []
 
 def get_categories():

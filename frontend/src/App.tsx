@@ -15,8 +15,6 @@ import { HeroBanner } from './components/HeroBanner';
 import { Footer } from './components/Footer';
 
 import { CartPage } from './components/CartPage';
-import { CheckoutPage } from './components/CheckoutPage';
-import { VNPayCallback } from './components/VNPayCallback';
 
 export interface CartItem {
   id: string;
@@ -66,10 +64,6 @@ function App() {
   }, [cart]);
 
   const addToCart = (item: Omit<CartItem, 'id'>) => {
-    if (item.tour.price === 0) {
-      alert('Không thể thêm tour liên hệ vào giỏ hàng. Vui lòng gửi yêu cầu liên hệ tư vấn.');
-      return;
-    }
     const id = `${item.tour.id}_${item.departureDate}`;
     setCart(prev => {
       const existing = prev.find(i => i.id === id);
@@ -486,18 +480,6 @@ function App() {
               token={token}
               currentUser={user}
             />
-          } />
-
-          <Route path="/checkout" element={
-            <CheckoutPage
-              token={token}
-              currentUser={user}
-              clearCart={clearCart}
-            />
-          } />
-
-          <Route path="/vnpay-callback" element={
-            <VNPayCallback />
           } />
 
           <Route path="/planner" element={

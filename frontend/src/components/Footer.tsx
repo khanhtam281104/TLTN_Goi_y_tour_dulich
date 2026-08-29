@@ -81,7 +81,7 @@ export const Footer: React.FC = () => {
         <div className="footer-info-details-row">
           <div className="footer-info-col" style={{ gridColumn: 'span 1' }}>
             <h4>Liên hệ</h4>
-            <p className="footer-company-name">CÔNG TY CỔ PHẦN TRUYỀN THÔNG BINTRAVEL</p>
+            <p className="footer-company-name">CÔNG TY CỔ PHẦN TRUYỀN BinTravel</p>
             <ul className="footer-address-list">
               <li>
                 <strong>Trụ sở chính:</strong> 239A Hoàng Văn Thụ, P.8, Q.Phú Nhuận, TP. Hồ Chí Minh.
@@ -107,7 +107,7 @@ export const Footer: React.FC = () => {
               <li><span style={{ cursor: 'pointer' }}>Chính sách đặt tour</span></li>
               <li><span style={{ cursor: 'pointer' }}>Chính sách bảo mật</span></li>
               <li><span style={{ cursor: 'pointer' }}>Ý kiến khách hàng</span></li>
-              <li><Link to="/gop-y" style={{ cursor: 'pointer' }}>Đóng góp ý kiến</Link></li>
+              <li><Link to="/gop-y" style={{ cursor: 'pointer' }}>Phiếu góp ý</Link></li>
               <li><span style={{ cursor: 'pointer' }}>Tin tức & Sự kiện</span></li>
             </ul>
           </div>
@@ -194,7 +194,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="footer-copyright">
-          © 2026 BINTRAVEL. Bản quyền đã được bảo hộ.
+          © 2026 DU LỊCH VIỆT. Ghi rõ nguồn "dulichviet.com.vn" khi sử dụng thông tin từ website này.
         </div>
       </div>
     </footer>

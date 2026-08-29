@@ -156,13 +156,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
       {/* Left side: Visual Branding & Info */}
       <div className="auth-page-left">
         <div className="auth-brand" onClick={() => navigate('/')}>
-          <div className="auth-logo-circle">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '20px' }}>
-              <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="rgba(255, 255, 255, 0.2)"/>
-            </svg>
-          </div>
-          <span className="auth-logo-title">Bintravel</span>
+          <div className="auth-logo-circle">✈️</div>
+          <span className="auth-logo-title">dulichviet</span>
         </div>
 
         <div className="auth-promo-content">
@@ -199,7 +194,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
         </div>
 
         <div className="auth-footer-text">
-          © 2026 Bintravel. Bản quyền đã được bảo hộ.
+          © 2026 dulichviet. Bản quyền đã được bảo hộ.
         </div>
       </div>
 

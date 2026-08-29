@@ -8,20 +8,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-# Resolve absolute paths relative to train.py location
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csv_path = os.path.join(base_dir, "tours.csv")
-metrics_dir = os.path.join(base_dir, "ml", "metrics")
-models_dir = os.path.join(base_dir, "ml", "models")
-
 # Ensure directories exist
-os.makedirs(metrics_dir, exist_ok=True)
-os.makedirs(models_dir, exist_ok=True)
+os.makedirs("ml/metrics", exist_ok=True)
+os.makedirs("ml/models", exist_ok=True)
 
 print("--- [1] Loading dataset & Generating Labeled Queries ---")
 # Try loading tours database to extract locations
 try:
-    df_tours = pd.read_csv(csv_path, encoding="utf-8")
+    df_tours = pd.read_csv("tours.csv", encoding="utf-8")
     locations = df_tours["location"].dropna().unique().tolist()
     print(f"Found {len(locations)} unique locations in database: {[loc.encode('ascii', 'ignore').decode() for loc in locations]}")
 except Exception as e:
@@ -268,11 +262,11 @@ report = classification_report(y_test, y_pred)
 
 print("\n--- [3] Training Completed. Evaluation Metrics ---")
 print(f"Accuracy: {accuracy * 100:.2f}%")
-with open(os.path.join(metrics_dir, "evaluation_report.txt"), "w", encoding="utf-8") as f:
+with open("ml/metrics/evaluation_report.txt", "w", encoding="utf-8") as f:
     f.write(f"Accuracy: {accuracy * 100:.2f}%\n\n")
     f.write("Classification Report:\n")
     f.write(report)
-print(f"Saved classification report details to: {os.path.join(metrics_dir, 'evaluation_report.txt')}")
+print("Saved classification report details to: ml/metrics/evaluation_report.txt")
 
 # Plot Loss Curve
 plt.figure(figsize=(8, 5))
@@ -283,9 +277,9 @@ plt.ylabel("Loss value", fontsize=10)
 plt.grid(True, linestyle="--", alpha=0.6)
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(metrics_dir, "training_curve.png"), dpi=150)
+plt.savefig("ml/metrics/training_curve.png", dpi=150)
 plt.close()
-print(f"Saved loss curve plot to: {os.path.join(metrics_dir, 'training_curve.png')}")
+print("Saved loss curve plot to: ml/metrics/training_curve.png")
 
 # Plot Confusion Matrix
 classes = np.unique(y_test)
@@ -311,14 +305,14 @@ for i in range(cm.shape[0]):
 plt.ylabel('True labels (Thực tế)', fontsize=11, fontweight="bold")
 plt.xlabel('Predicted labels (Dự đoán)', fontsize=11, fontweight="bold")
 plt.tight_layout()
-plt.savefig(os.path.join(metrics_dir, "confusion_matrix.png"), dpi=150)
+plt.savefig("ml/metrics/confusion_matrix.png", dpi=150)
 plt.close()
-print(f"Saved confusion matrix plot to: {os.path.join(metrics_dir, 'confusion_matrix.png')}")
+print("Saved confusion matrix plot to: ml/metrics/confusion_matrix.png")
 
 # Save TF-IDF Vectorizer and trained model parameters using pickle
-with open(os.path.join(models_dir, "tfidf_vectorizer.pkl"), "wb") as f:
+with open("ml/models/tfidf_vectorizer.pkl", "wb") as f:
     pickle.dump(vectorizer, f)
-with open(os.path.join(models_dir, "intent_classifier.pkl"), "wb") as f:
+with open("ml/models/intent_classifier.pkl", "wb") as f:
     pickle.dump(model, f)
 
 print("\nSaved trained model assets successfully under ml/models/")
